@@ -13,7 +13,7 @@ import {
   testAvatar
 } from "./card";
 
-export default function App() {
+export default function KitchenSink() {
   return (
     <div>
       <div className="row hand">
@@ -46,6 +46,16 @@ export default function App() {
               <OrderCard
                 name="番茄煎蛋面"
                 scores="￥13|￥8"
+                className="horizontal xxs"
+              />
+              <OrderCard
+                name="脆绍面"
+                scores="￥8|￥5"
+                className="horizontal xxs"
+              />
+              <OrderCard
+                name="脆绍面"
+                scores="￥8|￥5"
                 className="horizontal xxs"
               />
               <OrderCard
