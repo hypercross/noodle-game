@@ -141,6 +141,30 @@ function Hand(props) {
   );
 }
 
+function Owned(props) {
+  const player = props.player;
+  player.useUpdate();
+
+  return (
+    <div className="row">
+      {player.specialFlavors.map((flavor, i) => (
+        <OrderCard
+          key={i}
+          {...flavor.renderProps()}
+          className="horizontal xxs"
+        />
+      ))}
+      {player.customers.map((customer, i) => (
+        <CustomerCard
+          key={i + player.specialFlavors.length}
+          {...customer}
+          className="xxs"
+        />
+      ))}
+    </div>
+  );
+}
+
 function renderGame(game) {
   self.game = game;
 
@@ -156,7 +180,7 @@ function renderGame(game) {
     <CarouselProvider
       naturalSlideWidth="10"
       naturalSlideHeight="4.5"
-      totalSlides="3"
+      totalSlides="4"
     >
       <Slider>
         <Slide index={0}>
@@ -167,6 +191,9 @@ function renderGame(game) {
         </Slide>
         <Slide index={2}>
           <Customers game={game} />
+        </Slide>
+        <Slide index={3}>
+          <Owned player={game.getLocalPlayer()} />
         </Slide>
       </Slider>
       <DotGroup />

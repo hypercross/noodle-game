@@ -79,7 +79,7 @@ export function AvatarCard(props) {
   const actions = [];
   for (let i = 0; i < props.actions; i++) {
     actions.push(
-      <CardIcon i={4 - (i % 5)} j={Math.floor(i / 5)} type="action" />
+      <CardIcon key={i} i={4 - (i % 5)} j={Math.floor(i / 5)} type="action" />
     );
   }
   const actionRows = Math.floor((actions.length - 1) / 5) + 1;
@@ -87,6 +87,7 @@ export function AvatarCard(props) {
   for (let i = 0; i < props.customers; i++) {
     customers.push(
       <CardIcon
+        key={i + actions.length + 1}
         i={4 - (i % 5)}
         j={Math.floor(i / 5) + actionRows}
         type="customer"
