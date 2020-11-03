@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { fromSeed, shuffle } from "./rng";
 const update = new Event("update");
 
@@ -17,7 +17,7 @@ export function useEvent(target, type, callback, deps) {
   }, deps);
 }
 
-class AdhocEventTarget {
+class AdhocEventTarget extends EventTarget {
   id = Math.random()
     .toString(16)
     .slice(-8);
@@ -25,8 +25,21 @@ class AdhocEventTarget {
     this.dispatchEvent(update);
   }
 
-  useUpdate(cb) {
+  useUpdateEffect(cb) {
     useEvent(this, "update", cb, [this]);
+  }
+
+  useUpdate() {
+    const [i, inc] = useState(0);
+    const cb = useMemo(
+      function() {
+        let j = i;
+        return () => inc(++j);
+      },
+      [inc]
+    );
+
+    this.useUpdateEffect(cb);
   }
 }
 
@@ -36,9 +49,13 @@ export class Game extends AdhocEventTarget {
   flavors = new Deck(this.rng);
   customers = new Deck(this.rng);
   players = [];
+  localPlayer = 0;
+
   constructor(n) {
+    super();
     for (let i = 0; i < n; i++) {
       this.players.push(new Player());
+      this.players[i].name = "player-" + (i + 1);
     }
   }
 
@@ -57,6 +74,8 @@ class Player extends AdhocEventTarget {
   specialFlavors = [];
   customers = [];
 
+  name = this.id;
+
   init() {
     this.bowls.forEach(bowl => bowl.init());
     this.hand.length = 0;
@@ -66,7 +85,7 @@ class Player extends AdhocEventTarget {
 
   totalScore() {
     return (
-      bowls.map(bowl => bowl.totalScore()).reduce((a, b) => a + b, 0) +
+      this.bowls.map(bowl => bowl.totalScore()).reduce((a, b) => a + b, 0) +
       this.customers.reduce((a, b) => a + b, 0)
     );
   }
@@ -87,6 +106,14 @@ class Player extends AdhocEventTarget {
     }
 
     bowl.ingredients.push(...ings);
+  }
+
+  renderProps() {
+    const avatar = `//robohash.org/${this.name}?set=set4&size=80x80`;
+    const name = this.name;
+    const score = "￥" + this.totalScore();
+    const stats = this.bowls.map(bowl => bowl.ingredients);
+    return { avatar, name, score, stats, key: this.id };
   }
 }
 
@@ -111,6 +138,18 @@ class Bowl extends AdhocEventTarget {
     this.flavor = flavor;
     this.rules = [...flavor.rules, ...basicRules];
   }
+
+  renderProps() {
+    const order = this.flavor || this.flavor.name;
+    const ingredients = this.ingredients;
+    const score = this.totalScore();
+    return {
+      order,
+      ingredients,
+      score,
+      key: this.id
+    };
+  }
 }
 
 class Deck extends AdhocEventTarget {
@@ -119,6 +158,7 @@ class Deck extends AdhocEventTarget {
   zonelist = [];
 
   constructor(rng) {
+    super();
     this.rng = rng;
   }
 
@@ -137,7 +177,7 @@ class Deck extends AdhocEventTarget {
       shuffle(this.discardlist, this.rng);
       this.drawlist = this.discardlist.concat(this.drawlist);
     }
-    const start = Math.max(0, this.decklist.length - n);
+    const start = Math.max(0, this.drawlist.length - n);
     const drawn = this.drawlist.splice(start, n);
     to.push(...drawn);
     return drawn.length;
@@ -150,5 +190,14 @@ class Deck extends AdhocEventTarget {
 
     this.zonelist.splice(zi, 1);
     this.discardlist.push(target);
+  }
+
+  renderProps() {
+    return {
+      drawSize: this.drawlist.length,
+      discardSize: this.discardlist.length,
+      zone: this.zonelist,
+      key: this.id
+    };
   }
 }

@@ -238,6 +238,15 @@ function makeCustomer(name, score, rule) {
   return {
     name,
     score,
+    setScoreWithDice(total, used, rng) {
+      const scores = [];
+      for (let i = 0; i < total; i++) {
+        scores.push(rng.int(1, 6));
+      }
+      scores.sort((a, b) => a - b);
+      scores.length = Math.min(scores.length, used);
+      this.score = scores.reduce((a, b) => a + b, 0);
+    },
     rule
   };
 }
@@ -257,7 +266,7 @@ export const customers = [
       return true;
     }).length;
   }),
-  makeCustomer("打工人", 5, player => {
+  makeCustomer("打工人", 10, player => {
     return player.bowls.filter(bowl => {
       if (!bowl.flavor) return false;
       if (bowl.flavor !== "特价面") return false;

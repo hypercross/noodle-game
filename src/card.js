@@ -77,7 +77,7 @@ export function AvatarCard(props) {
       <div className="stats">
         {props.stats.map((stat, i) => (
           <div className="stat" key={i}>
-            {stat}
+            <BowlProgress ingredients={stat} />
           </div>
         ))}
       </div>
@@ -97,9 +97,5 @@ export const testAvatar = {
   avatar: "//robohash.org/" + "player1" + "?set=set4&size=80x80",
   name: "hyper",
   score: "￥80",
-  stats: [
-    <BowlProgress ingredients={[{ type: "肉" }]} />,
-    <BowlProgress ingredients={[]} />,
-    <BowlProgress ingredients={[]} />
-  ]
+  stats: [[{ type: "肉" }], [], []]
 };
