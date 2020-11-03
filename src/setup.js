@@ -36,13 +36,18 @@ export function makeGame(n) {
 
   const flavors = [];
   for (const flavor of sichuan.flavors) {
-    flavors.push({ ...flavor }, { ...flavor });
+    flavors.push(flavor, flavor);
   }
 
-  const customers = sichuan.customers.slice();
+  const customers = sichuan.customers.map(c => ({ ...c }));
 
   game.init(game.rng, ingredients, flavors, customers);
   game.ingredients.deal(3);
+  game.flavors.deal(5);
+  game.customers.deal(3);
+  game.ingredients.deal(30, game.getLocalPlayer().hand);
+  game.customers.deal(1, game.getLocalPlayer().customers);
+  game.flavors.deal(1, game.getLocalPlayer().specialFlavors);
   return {
     game,
     flavors,
@@ -58,6 +63,7 @@ function PlayerComponent(props) {
 }
 
 function Ingredients(props) {
+  props.game.ingredients.useUpdate();
   const ings = props.game.ingredients.renderProps();
   return (
     <div className="row">
@@ -74,6 +80,66 @@ function Ingredients(props) {
   );
 }
 
+function Flavors(props) {
+  props.game.flavors.useUpdate();
+  const flavors = props.game.flavors.renderProps();
+  return (
+    <div className="row">
+      {flavors.zone.map((flavor, i) => (
+        <OrderCard
+          key={i}
+          {...flavor.renderProps()}
+          className="horizontal xxs"
+        />
+      ))}
+    </div>
+  );
+}
+
+function Customers(props) {
+  props.game.customers.useUpdate();
+  const customers = props.game.customers.renderProps();
+  return (
+    <div className="row">
+      {customers.zone.map((customer, i) => (
+        <CustomerCard key={i} {...customer} className="xxs" />
+      ))}
+    </div>
+  );
+}
+
+function Bowl(props) {
+  const bowl = props.bowl.renderProps();
+  return <BowlCard {...bowl} className="xs" />;
+}
+
+function Hand(props) {
+  const player = props.player;
+  player.useUpdate();
+  const hand = player.hand;
+
+  return (
+    <CarouselProvider
+      totalSlides={hand.length}
+      naturalSlideHeight={3}
+      naturalSlideWidth={2}
+      dragStep={4}
+      visibleSlides={Math.min(hand.length, 5)}
+    >
+      <Slider>
+        {hand.map((c, i) => {
+          return (
+            <Slide key={i}>
+              <IngCard {...c} className="xxs" />
+            </Slide>
+          );
+        })}
+      </Slider>
+      <DotGroup />
+    </CarouselProvider>
+  );
+}
+
 function renderGame(game) {
   self.game = game;
 
@@ -85,12 +151,43 @@ function renderGame(game) {
     </div>
   );
 
-  const ingredients = <Ingredients game={game} />;
+  const wrapped = (
+    <CarouselProvider
+      naturalSlideWidth="10"
+      naturalSlideHeight="4.5"
+      totalSlides="3"
+    >
+      <Slider>
+        <Slide index={0}>
+          <Ingredients game={game} />
+        </Slide>
+        <Slide index={1}>
+          <Flavors game={game} />
+        </Slide>
+        <Slide index={2}>
+          <Customers game={game} />
+        </Slide>
+      </Slider>
+      <DotGroup />
+    </CarouselProvider>
+  );
+
+  const bowlRow = (
+    <div className="row">
+      {game.getLocalPlayer().bowls.map(bowl => (
+        <Bowl key={bowl.id} bowl={bowl} />
+      ))}
+    </div>
+  );
+
+  const hands = <Hand player={game.getLocalPlayer()} />;
 
   return (
-    <div>
+    <div className="column">
       {playerRow}
-      {ingredients}
+      {wrapped}
+      {bowlRow}
+      {hands}
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { dice } from "./rng";
+
 export const catalog = [
   { type: "肉", name: "墨鱼" },
   { type: "肉", name: "花甲" },
@@ -73,6 +75,13 @@ class NoodleFlavor {
   required = [];
   recommended = [];
   prohibited = [];
+
+  renderProps() {
+    return {
+      name: this.name,
+      scores: this.tiers.map(t => `￥${t.score}`).join("|")
+    };
+  }
 
   findMatch(ings, required) {
     const names = {};
@@ -234,14 +243,19 @@ n8.recommended.push(红油推荐, 盐须推荐);
 
 export const flavors = [n0, n1, n2, n3, n4, n5, n6, n7, n8];
 
-function makeCustomer(name, score, rule) {
+function makeCustomer(name, score, rule, total, used) {
   return {
     name,
     score,
-    setScoreWithDice(total, used, rng) {
+    total,
+    used,
+    setScoreWithDice(rng) {
       const scores = [];
+      let { total, used } = this;
+      total = total || 3;
+      used = used || 2;
       for (let i = 0; i < total; i++) {
-        scores.push(rng.int(1, 6));
+        scores.push(dice(6, rng));
       }
       scores.sort((a, b) => a - b);
       scores.length = Math.min(scores.length, used);
@@ -266,13 +280,19 @@ export const customers = [
       return true;
     }).length;
   }),
-  makeCustomer("打工人", 10, player => {
-    return player.bowls.filter(bowl => {
-      if (!bowl.flavor) return false;
-      if (bowl.flavor !== "特价面") return false;
-      return true;
-    }).length;
-  }),
+  makeCustomer(
+    "打工人",
+    10,
+    player => {
+      return player.bowls.filter(bowl => {
+        if (!bowl.flavor) return false;
+        if (bowl.flavor !== "特价面") return false;
+        return true;
+      }).length;
+    },
+    3,
+    3
+  ),
   makeCustomer("急性子", 5, player => {
     return player.bowls.filter(bowl => {
       if (!bowl.flavor) return false;

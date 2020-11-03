@@ -20,3 +20,13 @@ export function shuffle(deck, rng) {
     deck[i] = t;
   }
 }
+
+export function dice(n, rng) {
+  if (rng) {
+    random.use(rng);
+  } else {
+    random.use(defaultSeed);
+  }
+
+  return random.int(1, n);
+}

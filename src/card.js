@@ -58,7 +58,7 @@ export function CustomerCard(props) {
   return (
     <Playcard className={props.className}>
       <h1>{props.name}</h1>
-      <h2>{props.desc}</h2>
+      <h2>￥{props.score}</h2>
     </Playcard>
   );
 }

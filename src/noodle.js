@@ -51,6 +51,10 @@ export class Game extends AdhocEventTarget {
   players = [];
   localPlayer = 0;
 
+  getLocalPlayer() {
+    return this.players[this.localPlayer];
+  }
+
   constructor(n) {
     super();
     for (let i = 0; i < n; i++) {
@@ -60,6 +64,9 @@ export class Game extends AdhocEventTarget {
   }
 
   init(rng, ingredients, flavors, customers) {
+    customers.forEach(c => {
+      c.setScoreWithDice(this.rng);
+    });
     this.rng = rng;
     this.ingredients.init(rng, ingredients);
     this.flavors.init(rng, flavors);
@@ -140,7 +147,7 @@ class Bowl extends AdhocEventTarget {
   }
 
   renderProps() {
-    const order = this.flavor || this.flavor.name;
+    const order = this.flavor && this.flavor.name;
     const ingredients = this.ingredients;
     const score = this.totalScore();
     return {
