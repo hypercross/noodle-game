@@ -120,25 +120,25 @@ body,
 }
 
 .cicon {
-  width: 1em;
-  height: 1em;
-  display: inline-block;
-  overflow: hidden;
-  border-radius: 0.5em;
-  box-sizing: border-box;
-  margin: 0.1em;
+  fill: none;
 }
 .cicon-ing-none {
-  border: 0.2em solid grey;
+  fill: lightgray;
 }
 .cicon-ing-肉 {
-  background: rgb(207, 111, 0);
+  fill: rgb(207, 111, 0);
 }
 .cicon-ing-菜 {
-  background: green;
+  fill: green;
 }
 .cicon-ing-佐料 {
-  background: blue;
+  fill: blue;
+}
+.cicon-action {
+  fill: orange;
+}
+.cicon-customer {
+  fill: #009688;
 }
 
 .playcard.avatar .labels {
@@ -149,6 +149,12 @@ body,
   width: 100%;
   align-items: center;
 }
+.playcard.avatar h3 {
+  font-size: 1.5em;
+  line-height: 1.7em;
+  text-align: right;
+  padding-right: 0.3em;
+}
 .playcard.avatar .avatar {
   background: transparent bottom no-repeat;
   background-size: contain;
@@ -157,8 +163,8 @@ body,
 }
 .playcard.avatar .stats {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 .playcard.avatar.horizontal {
   flex-direction: row;

@@ -24,7 +24,14 @@ export function OrderCard(props) {
 }
 
 export function CardIcon(props) {
-  return <span className={"cicon cicon-" + props.type} />;
+  return (
+    <circle
+      cx={props.i * 10}
+      cy={(props.j || 0) * 10}
+      r="4"
+      className={"cicon cicon-" + props.type}
+    />
+  );
 }
 
 export function iconName(ing) {
@@ -34,11 +41,11 @@ export function iconName(ing) {
 
 export function BowlProgress(props) {
   return (
-    <React.Fragment>
+    <svg width="5em" height="1em" viewBox="-5 -5 50 10">
       {[0, 1, 2, 3, 4].map(i => (
-        <CardIcon key={i} type={iconName(props.ingredients[i])} />
+        <CardIcon key={i} i={i} type={iconName(props.ingredients[i])} />
       ))}
-    </React.Fragment>
+    </svg>
   );
 }
 
@@ -63,23 +70,58 @@ export function CustomerCard(props) {
   );
 }
 
+function duplicate(x, n) {
+  if (n < 1) return "";
+  return n > 0 ? duplicate(x, n - 1) + x : x;
+}
+
 export function AvatarCard(props) {
+  const actions = [];
+  for (let i = 0; i < props.actions; i++) {
+    actions.push(
+      <CardIcon i={4 - (i % 5)} j={Math.floor(i / 5)} type="action" />
+    );
+  }
+  const actionRows = Math.floor((actions.length - 1) / 5) + 1;
+  const customers = [];
+  for (let i = 0; i < props.customers; i++) {
+    customers.push(
+      <CardIcon
+        i={4 - (i % 5)}
+        j={Math.floor(i / 5) + actionRows}
+        type="customer"
+      />
+    );
+  }
+  const customerRows = Math.floor((customers.length - 1) / 5) + 1;
   return (
     <Playcard className={(props.className || "") + " avatar"}>
       <div className="labels">
         <h2>{props.name}</h2>
-        <h3>{props.score}</h3>
+        <h2>{props.score}</h2>
         <div
           className="avatar"
           style={{ backgroundImage: `url("${props.avatar}")` }}
         />
       </div>
       <div className="stats">
-        {props.stats.map((stat, i) => (
-          <div className="stat" key={i}>
-            <BowlProgress ingredients={stat} />
-          </div>
-        ))}
+        <div className="flex">
+          {props.stats.map((stat, i) => (
+            <div className="stat" key={i}>
+              <BowlProgress ingredients={stat} />
+            </div>
+          ))}
+        </div>
+        <h3>
+          <svg
+            width="5em"
+            height={actionRows + customerRows + "em"}
+            viewBox={"-5 -5 50 " + (actionRows + customerRows) * 10}
+          >
+            {actions}
+            {customers}
+          </svg>
+        </h3>
       </div>
     </Playcard>
   );

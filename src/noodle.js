@@ -80,6 +80,7 @@ class Player extends AdhocEventTarget {
   hand = [];
   specialFlavors = [];
   customers = [];
+  actions = 0;
 
   name = this.id;
 
@@ -93,7 +94,7 @@ class Player extends AdhocEventTarget {
   totalScore() {
     return (
       this.bowls.map(bowl => bowl.totalScore()).reduce((a, b) => a + b, 0) +
-      this.customers.reduce((a, b) => a + b, 0)
+      this.customers.map(c => c.score).reduce((a, b) => a + b, 0)
     );
   }
 
@@ -117,10 +118,11 @@ class Player extends AdhocEventTarget {
 
   renderProps() {
     const avatar = `//robohash.org/${this.name}?set=set4&size=80x80`;
-    const name = this.name;
     const score = "￥" + this.totalScore();
     const stats = this.bowls.map(bowl => bowl.ingredients);
-    return { avatar, name, score, stats, key: this.id };
+    const { name, actions } = this;
+    const customers = this.customers.length;
+    return { avatar, name, score, stats, actions, customers, key: this.id };
   }
 }
 

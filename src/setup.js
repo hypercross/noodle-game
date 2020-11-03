@@ -48,6 +48,7 @@ export function makeGame(n) {
   game.ingredients.deal(30, game.getLocalPlayer().hand);
   game.customers.deal(1, game.getLocalPlayer().customers);
   game.flavors.deal(1, game.getLocalPlayer().specialFlavors);
+  game.players[0].actions = 3;
   return {
     game,
     flavors,
