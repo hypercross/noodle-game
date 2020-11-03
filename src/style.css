@@ -1,0 +1,161 @@
+h1,
+p {
+  font-family: Lato;
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: rgb(235, 235, 235);
+}
+
+.carousel__dot-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 0;
+  flex-wrap: wrap;
+}
+.carousel__dot {
+  padding: 0.4em;
+  margin: 0.2em;
+
+  border: none;
+  background: lightgrey;
+}
+.carousel__dot.carousel__dot--selected {
+  background: grey;
+}
+.carousel .row {
+  height: 100%;
+}
+
+.row {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.row.hand {
+  flex-wrap: nowrap;
+  overflow: auto;
+  justify-content: left;
+}
+
+.playcard {
+  user-select: none;
+  background: rgb(245, 245, 245);
+  --scale: 1;
+  font-size: calc(var(--scale) * 1em);
+  font-family: sans-serif;
+  border-radius: calc(3mm * var(--scale));
+  width: calc(2.5in * var(--scale));
+  height: calc(3.5in * var(--scale));
+  min-width: calc(2.5in * var(--scale));
+  min-height: calc(3.5in * var(--scale));
+  box-shadow: 0.8mm 0.3mm 2mm 0 rgba(0, 0, 0, 0.3);
+  border: calc(3mm * var(--scale)) solid black;
+  box-sizing: border-box;
+  padding: calc(2mm * var(--scale));
+  margin: calc(6mm * var(--scale));
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.playcard.horizontal {
+  width: calc(3.5in * var(--scale));
+  height: calc(2.5in * var(--scale));
+  min-width: calc(3.5in * var(--scale));
+  min-height: calc(2.5in * var(--scale));
+}
+
+.playcard.pile {
+  --shadow-dist: calc(0.5mm * var(--scale));
+  box-shadow: calc(var(--shadow-dist) * 2) calc(var(--shadow-dist) * 3),
+    calc(var(--shadow-dist) * 4) calc(var(--shadow-dist) * 6),
+    calc(var(--shadow-dist) * 6) calc(var(--shadow-dist) * 9);
+  margin-bottom: calc(6.5mm * var(--scale));
+}
+
+.playcard.active {
+  border-color: darkorange;
+}
+
+.playcard h1 {
+  margin: 0em 0;
+  font-size: 4em;
+  font-weight: bold;
+}
+.playcard h2 {
+  margin: 0;
+  font-size: 3em;
+  font-weight: 400;
+}
+.playcard h3 {
+  margin: 0;
+  font-size: 2em;
+  font-weight: 300;
+}
+.playcard.sm {
+  --scale: 0.5;
+}
+.playcard.xs {
+  --scale: 0.3;
+}
+.playcard.xxs {
+  --scale: 0.25;
+}
+
+.cicon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 0.5em;
+  box-sizing: border-box;
+  margin: 0.1em;
+}
+.cicon-ing-none {
+  border: 0.2em solid grey;
+}
+.cicon-ing-肉 {
+  background: rgb(207, 111, 0);
+}
+.cicon-ing-菜 {
+  background: green;
+}
+.cicon-ing-佐料 {
+  background: blue;
+}
+
+.playcard.avatar .labels {
+  flex: 1;
+  margin: 0.5em 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+.playcard.avatar .avatar {
+  background: transparent bottom no-repeat;
+  background-size: contain;
+  flex: 1;
+  width: 100%;
+}
+.playcard.avatar .stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.playcard.avatar.horizontal {
+  flex-direction: row;
+}
+.playcard.avatar.horizontal .labels {
+  width: unset;
+  height: 100%;
+}
+.playcard.avatar.horizontal .stats {
+  flex: 1;
+}
