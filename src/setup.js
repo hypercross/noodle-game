@@ -1,5 +1,6 @@
 import { Game } from "./noodle";
 import * as sichuan from "./sichuan";
+import * as action from "./action";
 
 import React from "react";
 import { CarouselProvider, Slider, Slide, DotGroup } from "pure-react-carousel";
@@ -217,6 +218,7 @@ function renderGame(game) {
 
   return (
     <div className="column">
+      <action.testActionContext />
       {playerRow}
       {wrapped}
       {bowlRow}
