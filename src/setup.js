@@ -60,7 +60,8 @@ export function makeGame(n) {
 
 function PlayerComponent(props) {
   props.player.useUpdate();
-  return <AvatarCard {...props.player.renderProps()} className="xs" />;
+  const className = "xs " + (props.local ? "swell " : "");
+  return <AvatarCard {...props.player.renderProps()} className={className} />;
 }
 
 function Ingredients(props) {
@@ -171,7 +172,11 @@ function renderGame(game) {
   const playerRow = (
     <div className="row hand">
       {game.players.map(player => (
-        <PlayerComponent key={player.id} player={player} />
+        <PlayerComponent
+          local={player == game.getLocalPlayer()}
+          key={player.id}
+          player={player}
+        />
       ))}
     </div>
   );

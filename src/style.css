@@ -10,6 +10,7 @@ body,
   min-height: 100vh;
   background-color: rgb(235, 235, 235);
   display: flex;
+  overflow: hidden;
 }
 .column {
   display: flex;
@@ -18,6 +19,9 @@ body,
 }
 .flex {
   flex: 1;
+}
+.swell {
+  transform: scale(1.08);
 }
 
 .carousel__dot-group {
@@ -36,6 +40,12 @@ body,
 }
 .carousel__dot.carousel__dot--selected {
   background: grey;
+}
+.carousel {
+  touch-action: none;
+}
+.sliderAnimation___300FY {
+  transition: 0.2s !important;
 }
 .carousel .row {
   height: 100%;
