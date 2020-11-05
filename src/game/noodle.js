@@ -105,9 +105,9 @@ export class Bowl extends AdhocEventTarget {
       .reduce((a, b) => a + b, 0);
   }
 
-  setFlavor(flavor, basicRules) {
+  setFlavor(flavor) {
     this.flavor = flavor;
-    this.rules = [...flavor.rules, ...(basicRules || [])];
+    this.rules = flavor.rules.slice();
   }
 
   renderProps() {

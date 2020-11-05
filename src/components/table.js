@@ -80,7 +80,8 @@ const ActionsComponent = function() {
             onClick() {
                 ctx.clearSelection();
             },
-            key: 'cancel'
+            key: 'cancel',
+            disabled: ctx.selected.length == 0,
         },
     });
 
