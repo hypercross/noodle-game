@@ -94,7 +94,7 @@ export function GameLayout(props) {
         {
             Component: DeckZoneComponent, props: {
                 Component: FlavorComponent, deck: game.flavors,
-                componentProps: {className: 'xxs'}
+                componentProps: {className: 'xxs horizontal'}
             }
         },
         {

@@ -12,6 +12,7 @@ body,
   background-color: rgb(235, 235, 235);
   display: flex;
   overflow-x: hidden;
+  flex: 1;
 }
 .column {
   display: flex;
