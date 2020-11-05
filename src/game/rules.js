@@ -16,10 +16,13 @@ export function createGame(config) {
     const actions = [];
     // rng, n, localPlayer, ingredients, flavors, customers
     const game = new Game(rng, n, localPlayer,
-                          ingredients, flavors, bargain, customers,
-                          actions);
+        ingredients, flavors, bargain, customers,
+        actions);
 
-    actions.push(new PlayIngredientAction(game));
+    actions.push(
+        new PlayIngredientAction(game),
+        new DrawIngredientAction(game)
+    );
     return game;
 }
 
@@ -53,69 +56,111 @@ export function setupGame(game) {
 }
 
 class GameAction extends Action {
-    fromParams(){
+    fromParams() {
         const [game] = this.params;
         this.game = game;
         this.player = game.getLocalPlayer();
     }
 }
 
-class DrawIngredientAction extends GameAction{
+class DrawIngredientAction extends GameAction {
     name = '拿食材';
 
-    match(selected){
+    match(selected) {
+        // no actions left
+        if (this.player.actions <= 0)
+            return -1;
+
+        // empty -> 0
+        if (selected.length == 0)
+            return 0;
+
+        if (selected.length >= 2)
+            return -1;
+
+        const [card] = selected;
+        if (this.game.ingredients.zonelist.indexOf(card) >= 0) {
+            return 1;
+        } else if (this.game.drawTarget == card && this.game.ingredients.available() > 0) {
+            return 1;
+        }
+
+        return -1;
+    }
+    run(selected) {
+        const player = this.player;
+        const ingredients = this.game.ingredients;
+
+        this.player.actions--;
+
+        const [card] = selected;
+        const i = ingredients.zonelist.indexOf(card);
+
+        if (i >= 0) {
+            ingredients.zonelist.splice(i, 1);
+            player.hand.push(card);
+            ingredients.deal(1);
+        } else if (this.game.drawTarget == card) {
+            ingredients.deal(1, player.hand);
+            ingredients.discardlist.push(...ingredients.zonelist);
+            ingredients.zonelist.length = 0;
+            ingredients.deal(3);
+        }
+
+        this.game.ingredients.update();
+        this.player.update();
     }
 }
 
 class PlayIngredientAction extends GameAction {
     name = '下料';
 
-    isLocalHandCard(card){
+    isLocalHandCard(card) {
         return this.player.hand.indexOf(card) >= 0;
     }
 
-    isLocalBowl(card){
+    isLocalBowl(card) {
         return this.player.bowls.indexOf(card) >= 0;
     }
 
-    match(selected){
+    match(selected) {
         // no actions left
-        if(this.player.actions <= 0)return -1;
+        if (this.player.actions <= 0) return -1;
 
         // empty -> 0
-        if(selected.length == 0){
+        if (selected.length == 0) {
             return 0;
         }
 
         // not all ingredients in all but the last one -> -1
         const ilast = selected.length - 1;
-        for(let i = 0; i < ilast; i ++){
-            if(!this.isLocalHandCard(selected[i])){
+        for (let i = 0; i < ilast; i++) {
+            if (!this.isLocalHandCard(selected[i])) {
                 return -1;
             }
         }
 
         // have more than one type of ingredients -> -1
         const ing = selected[0];
-        for(const one of selected){
-            if(one instanceof Ingredient && one.name != ing.name)
+        for (const one of selected) {
+            if (one instanceof Ingredient && one.name != ing.name)
                 return -1;
         }
 
         // check last one
-        if(this.isLocalHandCard(selected[ilast])){
+        if (this.isLocalHandCard(selected[ilast])) {
             return 0;
-        }else if(this.isLocalBowl(selected[ilast])){
-            if(ilast == 0)return -1;
+        } else if (this.isLocalBowl(selected[ilast])) {
+            if (ilast == 0) return -1;
             const size = selected[ilast].ingredients.length + selected.length - 1;
-            if(size > 5)return -1;
+            if (size > 5) return -1;
             return 1;
-        }else{
+        } else {
             return -1;
         }
     }
 
-    run(selected){
+    run(selected) {
         const bowl = selected.pop();
         const player = this.player;
         player.addIngredient(bowl, ...selected);
