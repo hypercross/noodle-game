@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect } from "react";
 import { ActionContext } from "../game";
 import { ActionContextProvider, withAction, useActionContext } from "./actionctx";
 import { AvatarCard, BowlCard, CarouselRow, CustomerCard, FlavorCard, HandCardRow, IngCard, ItemsRow } from "./card";
@@ -35,7 +35,7 @@ const OwnedComponent = function(props) {
 const DeckZoneComponent = function(props) {
     const { deck, draw, Component, componentProps, ...others } = props;
     deck.useUpdate();
-    const { drawSize, discardSize, zone } = deck.renderProps();
+    const { zone } = deck.renderProps();
     const drawItem = draw && {
         Component: IngredientComponent,
         props: {
@@ -54,6 +54,9 @@ const DeckZoneComponent = function(props) {
 const ActionsComponent = function() {
     const ctx = useActionContext();
     ctx.useUpdate();
+    useEffect(function() {
+        ctx.updateAll();
+    }, [ctx]);
 
     const actions = ctx.actions.filter(action => !action.disabled).map(
         action => ({
@@ -69,6 +72,17 @@ const ActionsComponent = function() {
             }
         })
     );
+
+    actions.unshift({
+        Component: 'button',
+        props: {
+            children: '取消',
+            onClick() {
+                ctx.clearSelection();
+            },
+            key: 'cancel'
+        },
+    });
 
     return <ItemsRow items={actions} />
 }

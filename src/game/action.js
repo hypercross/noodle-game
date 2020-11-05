@@ -112,6 +112,8 @@ export class ActionContext extends AdhocEventTarget {
 
     selectable['_onRemoveSelectable_' + this.id] = syncSelected;
     selectable.addEventListener('activeChanged', syncSelected);
+
+    updateCandidate(this.selected, selectable, this.actions);
   }
 
   removeSelectable(selectable) {

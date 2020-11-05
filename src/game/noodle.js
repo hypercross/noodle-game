@@ -133,6 +133,10 @@ export class Deck extends AdhocEventTarget {
     this.zonelist = [];
   }
 
+  available(){
+    return this.drawlist.length + this.discardlist.length;
+  }
+
   deal(n, to) {
     to = to || this.zonelist;
     if (this.drawlist.length < n) {

@@ -35,9 +35,10 @@ export function useAction(ctx, action) {
 export function withAction(Component) {
   return function(props) {
     const { selectable, ...others } = props;
+    selectable.useUpdate();
+
     const ctx = useActionContext();
     useSelectable(ctx, selectable);
-    selectable.useUpdate();
 
     const onToggleActive = useMemo(function(){
       return () => selectable.disabled || setActive(selectable, !selectable.active)
