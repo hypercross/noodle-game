@@ -1,5 +1,6 @@
 import React from "react";
 import "./style.css";
+import { useGesture } from "react-use-gesture";
 
 import { CarouselProvider, Slider, Slide, DotGroup } from "pure-react-carousel";
 import "pure-react-carousel/dist/react-carousel.es.css";
@@ -13,7 +14,14 @@ function addClass(props, className) {
 }
 
 export function Playcard(props) {
-  return <div {...addClass(props, "playcard")}>{props.children}</div>;
+  const className = `playcard ${active ? "active" : ""} ${disabled ? "disabled" : ""}`;
+  const {onToggleActive} = props;
+  const bind = useGesture({
+    onDragStart(){
+      onToggleActive && onToggleActive();
+    }
+  })
+  return <div {...bind()} {...addClass(props, className)}>{props.children}</div>;
 }
 
 export function IngCard(props) {

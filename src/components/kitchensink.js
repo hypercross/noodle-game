@@ -45,7 +45,7 @@ export function KitchenSink() {
       }]} />
 
       <h3>Row of Customers</h3>
-      <CarouselRow aspect={[10,4.5]} slides={[{
+      <CarouselRow aspect={[10, 4.5]} slides={[{
         props: {
           className: 'xxs',
           name: '海王',

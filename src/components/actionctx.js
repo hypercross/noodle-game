@@ -1,5 +1,5 @@
-import React from "react";
-import { ActionContext } from "../game";
+import React, { useMemo } from "react";
+import { ActionContext, setActive } from "../game";
 
 const ctx = React.createContext(new ActionContext());
 export function useActionContext() {
@@ -34,4 +34,21 @@ export function useAction(ctx, action) {
     };
   }, [ctx, action]);
   return action;
+}
+
+export function withAction(Component) {
+  return function(props) {
+    const { selectable, ...others } = props;
+    const ctx = useActionContext();
+    useSelectable(ctx, selectable);
+    selectable.useUpdate();
+
+    const onToggleActive = useMemo(function(){
+      return () => selectable.disabled || setActive(selectable, !selectable.active)
+    }, [selectable]);
+
+    const { active, disabled } = selectable;
+    const renderProps = selectable.renderProps();
+    return <Component active={active} disabled={disabled} onToggleActive={onToggleActive} {...others} {...renderProps} />
+  }
 }
