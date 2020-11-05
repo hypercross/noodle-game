@@ -1,6 +1,7 @@
-import React from "react";
-import { AvatarCard, CustomerCard, FlavorCard, IngCard, BowlCard, ItemsRow, CarouselRow, HandCardRow } from "./card";
-import { withAction } from "./actionctx";
+import React, { useMemo } from "react";
+import { ActionContext } from "../game";
+import { ActionContextProvider, withAction } from "./actionctx";
+import { AvatarCard, BowlCard, CarouselRow, CustomerCard, FlavorCard, HandCardRow, IngCard, ItemsRow } from "./card";
 
 const CustomerComponent = withAction(CustomerCard);
 const FlavorComponent = withAction(FlavorCard);
@@ -54,6 +55,11 @@ const DeckZoneComponent = function(props) {
 
 export function GameLayout(props) {
     const { game } = props;
+    const ctx = useMemo(function() {
+        const ctx = new ActionContext();
+        ctx.actions = game.actions;
+        return ctx;
+    }, [game]);
     const players = <ItemsRow className="hand" items={game.players.map(player => (
         {
             Component: PlayerComponent,
@@ -79,7 +85,7 @@ export function GameLayout(props) {
                 Component: CustomerComponent, deck: game.customers,
                 componentProps: { className: 'xxs' }
             }
-        },{
+        }, {
             Component: OwnedComponent, props: {
                 player: game.getLocalPlayer()
             }
@@ -94,9 +100,11 @@ export function GameLayout(props) {
     const hand = <HandComponent player={game.getLocalPlayer()} />
 
     return <div className="column">
-        {players}
-        {midrow}
-        {bowls}
-        {hand}
+        <ActionContextProvider value={ctx}>
+            {players}
+            {midrow}
+            {bowls}
+            {hand}
+        </ActionContextProvider>
     </div>
 }

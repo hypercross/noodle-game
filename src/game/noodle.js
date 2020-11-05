@@ -8,7 +8,7 @@ export class Game extends AdhocEventTarget {
   }
 
   fromParams() {
-    const [rng, n, localPlayer, ingredients, flavors, bargain, customers] = this.params;
+    const [rng, n, localPlayer, ingredients, flavors, bargain, customers, actions] = this.params;
     this.rng = rng;
 
     this.players = [];
@@ -23,6 +23,8 @@ export class Game extends AdhocEventTarget {
     this.flavors = new Deck(rng, flavors);
     this.bargain = bargain;
     this.customers = new Deck(rng, customers);
+
+    this.actions = actions;
   }
 }
 

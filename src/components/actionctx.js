@@ -5,11 +5,7 @@ const ctx = React.createContext(new ActionContext());
 export function useActionContext() {
   return React.useContext(ctx);
 }
-export function ActionContextProvider() {
-  const value = React.useMemo(() => new ActionContext(), []);
-  const Provider = ctx.Provider;
-  return <Provider value={value} />;
-}
+export const ActionContextProvider = ctx.Provider;
 
 export function useSelectable(ctx, selectable) {
   React.useEffect(() => {
