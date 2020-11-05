@@ -12,6 +12,7 @@ body,
   background-color: rgb(235, 235, 235);
   display: flex;
   overflow-x: hidden;
+  overflow-y: auto;
   flex: 1;
 }
 .column {
@@ -104,6 +105,10 @@ body,
 
 .playcard.active {
   border-color: darkorange;
+}
+
+.playcard.disabled {
+  border-color: darkgrey;
 }
 
 .playcard h1 {

@@ -84,6 +84,8 @@ export class ActionContext extends AdhocEventTarget {
     for (const one of this.selectables) {
       updateCandidate(selected, one, this.actions);
     }
+
+    this.update();
   };
 
   clearSelection(){

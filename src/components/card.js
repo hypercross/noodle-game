@@ -174,7 +174,7 @@ export function ItemsRow(props) {
 export function HandCardRow(props) {
   return <CarouselRow
     dragStep={4}
-    visibleSlides={Math.min(props.slides.length, 5)}
+    visibleSlides={5}
     {...props}
   />
 }
