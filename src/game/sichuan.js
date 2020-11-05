@@ -106,49 +106,49 @@ function named(name) {
 function typed(type) {
   return buildMatcher('是' + type, 0, ing => ing.type == type);
 }
-const n0 = Flavor.defaultConfig();
+const n0 = Flavor.defaultConfig(basicRules);
 n0.name = "特价面";
 n0.tiers = [{ count: 1, tier: "折扣", score: 0 }];
 
-const n1 = Flavor.defaultConfig();
+const n1 = Flavor.defaultConfig(basicRules);
 n1.name = "番茄煎蛋面";
 n1.required.push(named("番茄"), named("煎蛋"));
 n1.recommended.push(葱花推荐);
 n1.prohibited.push(红油禁选);
 
-const n2 = Flavor.defaultConfig();
+const n2 = Flavor.defaultConfig(basicRules);
 n2.name = "红烧排骨面";
 n2.required.push(named("排骨"), named("红油"));
 n2.recommended.push(葱花推荐);
 n2.prohibited.push(盐须禁选);
 
-const n3 = Flavor.defaultConfig();
+const n3 = Flavor.defaultConfig(basicRules);
 n3.name = "红烧牛肉面";
 n3.required.push(named("牛肉"), named("红油"));
 n3.recommended.push(盐须推荐);
 
-const n4 = Flavor.defaultConfig();
+const n4 = Flavor.defaultConfig(basicRules);
 n4.name = "海鲜面";
 n4.required.push(海鲜, 海鲜);
 n4.prohibited.push(红油禁选);
 
-const n5 = Flavor.defaultConfig();
+const n5 = Flavor.defaultConfig(basicRules);
 n5.name = "脆绍面";
 n5.required.push(named("红油"), named("臊子"));
 n5.recommended.push(葱花推荐);
 
-const n6 = Flavor.defaultConfig();
+const n6 = Flavor.defaultConfig(basicRules);
 n6.name = "怪味面";
 n6.required.push(named("臊子"), 海鲜);
 n6.recommended.push(葱花推荐);
 n6.prohibited.push(盐须禁选);
 
-const n7 = Flavor.defaultConfig();
+const n7 = Flavor.defaultConfig(basicRules);
 n7.name = "肥肠面";
 n7.required.push(named("肥肠"), named("红油"));
 n7.recommended.push(盐须推荐);
 
-const n8 = Flavor.defaultConfig();
+const n8 = Flavor.defaultConfig(basicRules);
 n8.name = "豌杂面";
 n8.required.push(named("臊子"), typed("菜"));
 n8.recommended.push(红油推荐, 盐须推荐);

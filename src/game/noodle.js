@@ -187,7 +187,8 @@ export class Ingredient extends AdhocEventTarget {
 }
 
 export class Flavor extends AdhocEventTarget {
-  static defaultConfig() {
+  static defaultConfig(basicRules) {
+    basicRules = basicRules || [];
     return {
       name: "点单",
       tiers: [
@@ -196,19 +197,21 @@ export class Flavor extends AdhocEventTarget {
       ],
       required: [],
       recommended: [],
-      prohibited: []
+      prohibited: [],
+      basicRules
     };
   }
 
   fromParams() {
     const {
-      name, tiers, required, recommended, prohibited
+      name, tiers, required, recommended, prohibited, basicRules,
     } = this.params[0];
     this.name = name;
     this.tiers = tiers;
     this.required = required;
     this.recommended = recommended;
     this.prohibited = prohibited;
+    this.basicRules = basicRules
   }
 
   renderProps() {
@@ -288,7 +291,7 @@ export class Flavor extends AdhocEventTarget {
       : {};
   };
 
-  rules = [this.orderRule, this.recommendedRule, this.prohibitedRule];
+  rules = [this.orderRule, this.recommendedRule, this.prohibitedRule, ...this.basicRules];
 }
 
 export class Customer extends AdhocEventTarget {
