@@ -1,6 +1,6 @@
 import React from "react";
 import { AvatarCard, CustomerCard, FlavorCard, IngCard, BowlCard, ItemsRow, CarouselRow, HandCardRow } from "./card";
-import { withAction } from "./action";
+import { withAction } from "./actionctx";
 import {
     fromSeed,
     prepareFlavors, prepareCustomers, prepareIngredients,
@@ -14,11 +14,11 @@ export function createGame(config) {
     const localPlayer = (config && config.localPlayer) || 0;
 
     const ingredients = prepareIngredients();
-    const flavors = prepareFlavors();
+    const { flavors, bargain } = prepareFlavors();
     const customers = prepareCustomers();
 
     // rng, n, localPlayer, ingredients, flavors, customers
-    const game = new Game(rng, n, localPlayer, ingredients, flavors, customers);
+    const game = new Game(rng, n, localPlayer, ingredients, flavors, bargain, customers);
     return game;
 }
 
@@ -50,16 +50,16 @@ const HandComponent = function(props) {
     const { player } = props;
     player.useUpdate();
     return <ItemsRow items={player.hand.map(card => ({
-        props: { selectable: card },
+        props: { selectable: card, className: 'xxs', key: card.id },
         Component: IngredientComponent
     }))} />
 }
 const DeckZoneComponent = function(props) {
-    const { deck, draw, Component, ...others } = props;
+    const { deck, draw, Component, componentProps, ...others } = props;
     deck.useUpdate();
-    const { zone } = deck.renderProps();
+    const { drawSize, discardSize, zone } = deck.renderProps();
     const drawItem = draw && {
-        Component,
+        Component: IngCard,
         props: {
             key: 'draw',
             className: 'xxs pile',
@@ -68,8 +68,8 @@ const DeckZoneComponent = function(props) {
         }
     };
     const items = zone.map(selectable => ({
-        props: { selectable },
-        Component: IngredientComponent
+        props: { selectable, key: selectable.id, ...componentProps },
+        Component
     }));
     if (drawItem) items.unshift(drawItem);
     return <ItemsRow items={items} {...others} />
@@ -77,33 +77,36 @@ const DeckZoneComponent = function(props) {
 
 export function GameLayout(props) {
     const { game } = props;
-    const players = <ItemsRow items={game.players.map(player => (
+    const players = <ItemsRow className="hand" items={game.players.map(player => (
         {
             Component: PlayerComponent,
-            props: { selectable: player }
+            props: { selectable: player, className: "xs", key: player.id }
         }
     ))} />;
 
     const midrow = <CarouselRow aspect={[10, 4.5]} slides={[
         {
             Component: DeckZoneComponent, props: {
-                Component: IngredientComponent, deck: game.ingredients, draw: true
+                Component: IngredientComponent, deck: game.ingredients, draw: true,
+                componentProps: {className: 'xxs'}
             }
         },
         {
             Component: DeckZoneComponent, props: {
-                Component: FlavorComponent, deck: game.flavors
+                Component: FlavorComponent, deck: game.flavors,
+                componentProps: {className: 'xxs'}
             }
         },
         {
             Component: DeckZoneComponent, props: {
-                Component: CustomerComponent, deck: game.customers
+                Component: CustomerComponent, deck: game.customers,
+                componentProps: {className: 'xxs'}
             }
         },
     ]} />;
 
-    const bowls = <ItemsRow items={game.getLocalPlayer().bowls.map(bowl => ({
-        props: { selectable: bowl },
+    const bowls = <ItemsRow items={game.getLocalPlayer().bowls.map((bowl, key) => ({
+        props: { selectable: bowl, className: 'xs', key },
         Component: BowlComponent
     }))} />;
 

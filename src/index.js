@@ -6,5 +6,6 @@ import ReactDOM from "react-dom";
 
 import * as table from "./components/table";
 const game = table.createGame();
+table.setupGame(game);
 const { GameLayout } = table;
 ReactDOM.render(<GameLayout game={game} />, document.getElementById("root"));

@@ -14,18 +14,18 @@ function addClass(props, className) {
 }
 
 export function Playcard(props) {
+  const { active, disabled, onToggleActive, ...others } = props;
   const className = `playcard ${active ? "active" : ""} ${disabled ? "disabled" : ""}`;
-  const {onToggleActive} = props;
   const bind = useGesture({
-    onDragStart(){
+    onDragStart() {
       onToggleActive && onToggleActive();
     }
   })
-  return <div {...bind()} {...addClass(props, className)}>{props.children}</div>;
+  return <div {...bind()} {...addClass(others, className)}>{props.children}</div>;
 }
 
 export function IngCard(props) {
-  const { name, type, ...others } = props;
+  const { name, type, isSeafood, ...others } = props;
   return (
     <Playcard {...others}>
       <h1>{name}</h1>
