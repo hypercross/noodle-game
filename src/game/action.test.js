@@ -55,7 +55,7 @@ test("selecting", () => {
     expect(summary()).toBe('aOb-cXab-bcX');
 
     setActive(b, true);
-    expect(summary()).toBe('a-bOc-abXbc-');
+    expect(summary()).toBe('aObOc-abObcX');
 
     setActive(c, true);
     expect(summary()).toBe('a-bOcOabXbcO');

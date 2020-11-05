@@ -24,8 +24,9 @@ export class Action extends AdhocEventTarget {
 
   updateFromSelected(selected) {
     const score = this.match(selected);
-    setActive(this, score > 0);
-    setDisabled(this, score < 0);
+    this.active = score > 0;
+    this.disabled = score < 0;
+    this.update();
     return score;
   }
 }
@@ -77,6 +78,7 @@ export class ActionContext extends AdhocEventTarget {
     const selected = this.selected;
 
     trimSelected(selected, this.actions);
+
     this.actions.forEach(action => action.updateFromSelected(selected));
 
     for (const one of this.selectables) {
