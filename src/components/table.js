@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ActionContext } from "../game";
-import { ActionContextProvider, withAction } from "./actionctx";
+import { ActionContextProvider, withAction, useActionContext } from "./actionctx";
 import { AvatarCard, BowlCard, CarouselRow, CustomerCard, FlavorCard, HandCardRow, IngCard, ItemsRow } from "./card";
 
 const CustomerComponent = withAction(CustomerCard);
@@ -37,12 +37,11 @@ const DeckZoneComponent = function(props) {
     deck.useUpdate();
     const { drawSize, discardSize, zone } = deck.renderProps();
     const drawItem = draw && {
-        Component: IngCard,
+        Component: IngredientComponent,
         props: {
             key: 'draw',
-            className: 'xxs pile',
-            name: '抽卡',
-            type: discardSize + drawSize,
+            selectable: draw,
+            ...componentProps
         }
     };
     const items = zone.map(selectable => ({
@@ -51,6 +50,27 @@ const DeckZoneComponent = function(props) {
     }));
     if (drawItem) items.unshift(drawItem);
     return <ItemsRow items={items} {...others} />
+}
+const ActionsComponent = function() {
+    const ctx = useActionContext();
+    ctx.useUpdate();
+
+    const actions = ctx.actions.filter(action => !action.disabled).map(
+        action => ({
+            Component: 'button',
+            props: {
+                children: action.name,
+                onClick() {
+                    action.run(ctx.selected);
+                    ctx.clearSelection();
+                },
+                disabled: !action.active,
+                key: action.name
+            }
+        })
+    );
+
+    return <ItemsRow items={actions} />
 }
 
 export function GameLayout(props) {
@@ -70,7 +90,7 @@ export function GameLayout(props) {
     const midrow = <CarouselRow aspect={[10, 4.5]} slides={[
         {
             Component: DeckZoneComponent, props: {
-                Component: IngredientComponent, deck: game.ingredients, draw: true,
+                Component: IngredientComponent, deck: game.ingredients, draw: game.drawTarget,
                 componentProps: { className: 'xxs' }
             }
         },
@@ -105,6 +125,7 @@ export function GameLayout(props) {
             {midrow}
             {bowls}
             {hand}
+            <ActionsComponent />
         </ActionContextProvider>
     </div>
 }

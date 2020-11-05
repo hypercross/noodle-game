@@ -52,25 +52,40 @@ export function setupGame(game) {
     game.update();
 }
 
-
-class PlayIngredientAction extends Action {
+class GameAction extends Action {
     fromParams(){
         const [game] = this.params;
         this.game = game;
-        this.name = '下料';
+        this.player = game.getLocalPlayer();
     }
+}
+
+class DrawIngredientAction extends GameAction{
+    name = '拿食材';
+
+    match(selected){
+    }
+}
+
+class PlayIngredientAction extends GameAction {
+    name = '下料';
 
     isLocalHandCard(card){
-        return this.game.getLocalPlayer().hand.indexOf(card) >= 0;
+        return this.player.hand.indexOf(card) >= 0;
     }
 
     isLocalBowl(card){
-        return this.game.getLocalPlayer().bowls.indexOf(card) >= 0;
+        return this.player.bowls.indexOf(card) >= 0;
     }
 
     match(selected){
+        // no actions left
+        if(this.player.actions <= 0)return -1;
+
         // empty -> 0
-        if(selected.length == 0)return 0;
+        if(selected.length == 0){
+            return 0;
+        }
 
         // not all ingredients in all but the last one -> -1
         const ilast = selected.length - 1;
@@ -91,11 +106,21 @@ class PlayIngredientAction extends Action {
         if(this.isLocalHandCard(selected[ilast])){
             return 0;
         }else if(this.isLocalBowl(selected[ilast])){
+            if(ilast == 0)return -1;
             const size = selected[ilast].ingredients.length + selected.length - 1;
             if(size > 5)return -1;
             return 1;
         }else{
             return -1;
         }
+    }
+
+    run(selected){
+        const bowl = selected.pop();
+        const player = this.player;
+        player.addIngredient(bowl, ...selected);
+        player.actions--;
+        player.update();
+        bowl.update();
     }
 }

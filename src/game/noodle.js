@@ -2,7 +2,6 @@ import { shuffle, dice } from "./rng";
 import { AdhocEventTarget } from "./event";
 
 export class Game extends AdhocEventTarget {
-
   getLocalPlayer() {
     return this.players[this.localPlayer];
   }
@@ -25,6 +24,23 @@ export class Game extends AdhocEventTarget {
     this.customers = new Deck(rng, customers);
 
     this.actions = actions;
+    this.drawTarget = new DrawTarget(this.ingredients);
+  }
+}
+
+class DrawTarget extends AdhocEventTarget {
+  fromParams(){
+    const [deck] = this.params;
+    this.deck = deck;
+  }
+  renderProps() {
+    const { drawSize, discardSize } = this.deck.renderProps();
+    return {
+      key: 'draw',
+      className: 'xxs pile',
+      name: '抽卡',
+      type: discardSize + drawSize,
+    }
   }
 }
 
@@ -148,16 +164,16 @@ export class Deck extends AdhocEventTarget {
     };
   }
 
-  shuffle(){
+  shuffle() {
     shuffle(this.drawlist, this.rng);
   }
 }
 
 export class Ingredient extends AdhocEventTarget {
   fromParams() {
-    const [type, name, isSeafood] = this.params;
-    this.type = type;
+    const [name, type, isSeafood] = this.params;
     this.name = name;
+    this.type = type;
     this.isSeafood = isSeafood;
   }
   renderProps() {
