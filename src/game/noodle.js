@@ -186,7 +186,7 @@ export class Flavor extends AdhocEventTarget {
 
   renderProps() {
     const name = this.name;
-    const scores = this.tiers.map(t => t.tier + '￥' + t.score).join(', ');
+    const scores = this.tiers.map(t => '￥' + t.score).join(', ');
     const recipe = {
       required: this.required.map(r => r.label),
       recommended: this.recommended.map(r => r.label),

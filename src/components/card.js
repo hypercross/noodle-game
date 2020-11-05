@@ -1,40 +1,54 @@
 import React from "react";
+import "./style.css";
+
+import { CarouselProvider, Slider, Slide, DotGroup } from "pure-react-carousel";
+import "pure-react-carousel/dist/react-carousel.es.css";
+
+function addClass(props, className) {
+  className += " " + ((props && props.className) || "");
+  return {
+    ...props,
+    className
+  };
+}
 
 export function Playcard(props) {
-  const className = "playcard " + (props.className || "");
-  return <div className={className}>{props.children}</div>;
+  return <div {...addClass(props, "playcard")}>{props.children}</div>;
 }
 
 export function IngCard(props) {
+  const { name, type, ...others } = props;
   return (
-    <Playcard className={props.className}>
-      <h1>{props.name}</h1>
-      <h2>{props.type}</h2>
+    <Playcard {...others}>
+      <h1>{name}</h1>
+      <h2>{type}</h2>
     </Playcard>
   );
 }
 
-export function OrderCard(props) {
+export function FlavorCard(props) {
+  const { name, scores, ...others } = props;
   return (
-    <Playcard className={props.className}>
-      <h2>{props.name}</h2>
-      <h2>{props.scores}</h2>
+    <Playcard {...others}>
+      <h2>{name}</h2>
+      <h2>{scores}</h2>
     </Playcard>
   );
 }
 
 export function CardIcon(props) {
+  const { i, j, type, others } = props;
   return (
     <circle
-      cx={props.i * 10}
-      cy={(props.j || 0) * 10}
+      cx={i * 10}
+      cy={(j || 0) * 10}
       r="4"
-      className={"cicon cicon-" + props.type}
+      {...addClass(others, "cicon cicon-" + type)}
     />
   );
 }
 
-export function iconName(ing) {
+export function ingredientIconName(ing) {
   if (ing && ing.type) return "ing-" + ing.type;
   return "ing-none";
 }
@@ -43,36 +57,33 @@ export function BowlProgress(props) {
   return (
     <svg width="5em" height="1em" viewBox="-5 -5 50 10">
       {[0, 1, 2, 3, 4].map(i => (
-        <CardIcon key={i} i={i} type={iconName(props.ingredients[i])} />
+        <CardIcon key={i} i={i} type={ingredientIconName(props.ingredients[i])} />
       ))}
     </svg>
   );
 }
 
 export function BowlCard(props) {
+  const { flavor, ingredients, score, ...others } = props
   return (
-    <Playcard className={props.className}>
-      <h2>{props.order || "未完成"}</h2>
+    <Playcard {...others}>
+      <h2>{flavor || "未完成"}</h2>
       <h3>
-        <BowlProgress ingredients={props.ingredients} />
+        <BowlProgress ingredients={ingredients} />
       </h3>
-      <h2>￥{props.score}</h2>
+      <h2>￥{score}</h2>
     </Playcard>
   );
 }
 
 export function CustomerCard(props) {
+  const { name, score, ...others } = props;
   return (
-    <Playcard className={props.className}>
-      <h1>{props.name}</h1>
-      <h2>￥{props.score}</h2>
+    <Playcard {...others}>
+      <h1>{name}</h1>
+      <h2>￥{score}</h2>
     </Playcard>
   );
-}
-
-function duplicate(x, n) {
-  if (n < 1) return "";
-  return n > 0 ? duplicate(x, n - 1) + x : x;
 }
 
 export function AvatarCard(props) {
@@ -128,17 +139,34 @@ export function AvatarCard(props) {
   );
 }
 
-function hash8() {
-  return Math.random()
-    .toString(16)
-    .slice(-8);
+export function CarouselRow(props) {
+  const { slides, aspect, ...others } = props;
+  return <CarouselProvider {...others}
+    naturalSlideWidth={aspect[0]}
+    naturalSlideHeight={aspect[1]}
+    totalSlides={slides.length}
+  >
+    <Slider> {
+      slides.map(({ props, Component }, i) => (
+        <Slide key={i} index={i}><Component {...props} /></Slide>
+      ))
+    } </Slider>
+    <DotGroup />
+  </CarouselProvider>
 }
-function hash32() {
-  return hash8() + hash8() + hash8() + hash8();
+
+export function ItemsRow(props) {
+  const { items, ...others } = props;
+  others.className = (others.className || "") + " row";
+  return <div {...others}> {
+    items.map(({ props, Component }) => <Component {...props} />)
+  } </div>
 }
-export const testAvatar = {
-  avatar: "//robohash.org/" + "player1" + "?set=set4&size=80x80",
-  name: "hyper",
-  score: "￥80",
-  stats: [[{ type: "肉" }], [], []]
-};
+
+export function HandCardRow(props) {
+  return <CarouselRow
+    dragStep={4}
+    visibleSlides={Math.min(props.slides.length, 5)}
+    {...props}
+  />
+}

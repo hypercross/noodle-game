@@ -86,6 +86,14 @@ export class ActionContext extends AdhocEventTarget {
     }
   };
 
+  clearSelection(){
+    for(const one of this.selectables){
+      one.active = false;
+    }
+    this.selected.length = 0;
+    this.updateAll();
+  }
+
   addSelectable(selectable) {
     this.selectables.push(selectable);
     const syncSelected = () => {
