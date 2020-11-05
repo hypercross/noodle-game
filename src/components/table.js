@@ -1,45 +1,6 @@
 import React from "react";
 import { AvatarCard, CustomerCard, FlavorCard, IngCard, BowlCard, ItemsRow, CarouselRow, HandCardRow } from "./card";
 import { withAction } from "./actionctx";
-import {
-    fromSeed,
-    prepareFlavors, prepareCustomers, prepareIngredients,
-    Game
-} from "../game";
-
-export function createGame(config) {
-
-    const rng = fromSeed((config && config.seed) || undefined);
-    const n = (config && config.nplayers) || 3;
-    const localPlayer = (config && config.localPlayer) || 0;
-
-    const ingredients = prepareIngredients();
-    const { flavors, bargain } = prepareFlavors();
-    const customers = prepareCustomers();
-
-    // rng, n, localPlayer, ingredients, flavors, customers
-    const game = new Game(rng, n, localPlayer, ingredients, flavors, bargain, customers);
-    return game;
-}
-
-export function setupGame(game) {
-    game.ingredients.deal(3);
-    game.flavors.deal(game.players.length + 1);
-    game.customers.deal(3);
-
-    game.players[0].actions = 2;
-    for (const player of game.players) {
-        game.ingredients.deal(3, player.hand);
-        game.flavors.deal(1, player.specialFlavors);
-        player.update();
-    }
-
-    game.ingredients.update();
-    game.flavors.update();
-    game.customers.update();
-
-    game.update();
-}
 
 const CustomerComponent = withAction(CustomerCard);
 const FlavorComponent = withAction(FlavorCard);
@@ -49,10 +10,26 @@ const PlayerComponent = withAction(AvatarCard);
 const HandComponent = function(props) {
     const { player } = props;
     player.useUpdate();
-    return <ItemsRow items={player.hand.map(card => ({
+    return <HandCardRow aspect={[2, 3]} slides={player.hand.map(card => ({
         props: { selectable: card, className: 'xxs', key: card.id },
         Component: IngredientComponent
     }))} />
+}
+const OwnedComponent = function(props) {
+    const { player } = props;
+    player.useUpdate();
+
+    const flavors = player.specialFlavors.map(card => ({
+        props: { selectable: card, className: 'xxs horizontal', key: card.id },
+        Component: FlavorComponent
+    }));
+
+    const customers = player.customers.map(card => ({
+        props: { selectable: card, className: 'xxs', key: card.id },
+        Component: CustomerComponent
+    }));
+
+    return <ItemsRow items={flavors.concat(customers)} />
 }
 const DeckZoneComponent = function(props) {
     const { deck, draw, Component, componentProps, ...others } = props;
@@ -88,21 +65,25 @@ export function GameLayout(props) {
         {
             Component: DeckZoneComponent, props: {
                 Component: IngredientComponent, deck: game.ingredients, draw: true,
-                componentProps: {className: 'xxs'}
+                componentProps: { className: 'xxs' }
             }
         },
         {
             Component: DeckZoneComponent, props: {
                 Component: FlavorComponent, deck: game.flavors,
-                componentProps: {className: 'xxs horizontal'}
+                componentProps: { className: 'xxs horizontal' }
             }
         },
         {
             Component: DeckZoneComponent, props: {
                 Component: CustomerComponent, deck: game.customers,
-                componentProps: {className: 'xxs'}
+                componentProps: { className: 'xxs' }
             }
-        },
+        },{
+            Component: OwnedComponent, props: {
+                player: game.getLocalPlayer()
+            }
+        }
     ]} />;
 
     const bowls = <ItemsRow items={game.getLocalPlayer().bowls.map((bowl, key) => ({

@@ -145,6 +145,10 @@ export class Deck extends AdhocEventTarget {
       key: this.id
     };
   }
+
+  shuffle(){
+    shuffle(this.drawlist, this.rng);
+  }
 }
 
 export class Ingredient extends AdhocEventTarget {

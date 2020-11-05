@@ -3,3 +3,4 @@ export * from "./noodle";
 export * from "./rng";
 export * from "./sichuan";
 export * from "./action";
+export * from "./rules";
