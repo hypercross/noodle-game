@@ -1,7 +1,7 @@
 import { fromSeed } from "./rng";
 import { Action } from "./action";
 import { prepareFlavors, prepareCustomers, prepareIngredients, } from "./sichuan";
-import { Game, Ingredient } from "./noodle";
+import { Game, Ingredient, Bowl } from "./noodle";
 
 export function createGame(config) {
 
@@ -21,7 +21,8 @@ export function createGame(config) {
 
     actions.push(
         new PlayIngredientAction(game),
-        new DrawIngredientAction(game)
+        new DrawIngredientAction(game),
+        new CompleteFlavorAction(game)
     );
     return game;
 }
@@ -60,6 +61,71 @@ class GameAction extends Action {
         const [game] = this.params;
         this.game = game;
         this.player = game.getLocalPlayer();
+    }
+}
+
+class CompleteFlavorAction extends GameAction {
+    name = '完成';
+
+    match(selected) {
+        if (this.player.actions <= 0)
+            return -1;
+
+        let bowl = null;
+        let flavor = null;
+
+        for (const one of selected) {
+            if (this.player.bowls.indexOf(one) >= 0) {
+                if(bowl)return -1;
+                bowl = one;
+            } else if (this.player.specialFlavors.indexOf(one) >= 0) {
+                if(flavor)return -1;
+                flavor = one;
+            } else if (this.game.flavors.zonelist.indexOf(one) >= 0) {
+                if(flavor)return -1;
+                flavor = one;
+            } else {
+                return -1;
+            }
+        }
+
+        if(!bowl || !flavor)
+            return 0;
+
+        if(flavor.findMatch(bowl.ingredients, flavor.required))
+            return 1;
+        return -1;
+    }
+
+    run(selected) {
+        this.player.actions--;
+
+        let bowl = null;
+        let flavor = null;
+        for (const one of selected) {
+            if (one instanceof Bowl) {
+                bowl = one;
+            } else {
+                const sfi = this.player.specialFlavors.indexOf(one);
+                if (sfi >= 0) {
+                    this.player.specialFlavors.splice(sfi, 1);
+                    this.player.update();
+                    flavor = one;
+                    continue;
+                }
+                const zli = this.game.flavors.zonelist.indexOf(one);
+                if (zli >= 0) {
+                    this.game.flavors.zonelist.splice(zli, 1);
+                    this.game.flavors.update();
+                    flavor = one;
+                    continue;
+                }
+                throw new Error("I don't know what this is");
+            }
+        }
+
+        bowl.setFlavor(flavor);
+        bowl.update();
     }
 }
 
